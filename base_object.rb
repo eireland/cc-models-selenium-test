@@ -10,10 +10,13 @@ class BaseObject
 
   def setup_one(browser)
     @@driver = Selenium::WebDriver.for browser
-    rescue Exception => e
-      puts e.message
-      puts "Could not start driver #{@@driver}"
-      exit
+    if browser!=:safari
+      manage_window_size
+    end
+  rescue Exception => e
+    puts e.message
+    puts "Could not start driver #{@@driver}"
+    exit
   end
 
   # def setup_caps(platform, browser)
@@ -74,8 +77,9 @@ class BaseObject
   end
 
   def manage_window_size
-    target_size = Selenium::WebDriver::Dimension.new(1680,1050)
+    target_size = Selenium::WebDriver::Dimension.new(1680,1023)
     @@driver.manage.window.size = target_size
+    # @@driver.manage.window.maximize
   end
 
   def visit(url='/')
@@ -86,6 +90,11 @@ class BaseObject
   def verify_page(title)
     puts "Page title is #{@@driver.title}"
     expect(@@driver.title).to include(title)
+  end
+
+  def get_url
+    puts "In get url"
+    @@driver.current_url
   end
 
   def get_page_title
@@ -142,6 +151,13 @@ class BaseObject
 
   def title
     @@driver.title
+  end
+
+  def submit_form(locator, input)
+    puts "in submit form"
+      clear(locator)
+      find(locator).send_keys input
+      find(locator).send_keys :return
   end
 
   def save_screenshot(dir,page_title)
@@ -213,6 +229,7 @@ class BaseObject
 
   def switch_to_iframe(locator)
     puts "In switch to iframe"
+    # iframe = find(locator)
     @@driver.switch_to.frame(locator)
   end
 
